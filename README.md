@@ -1,0 +1,1 @@
+Thinkful's Challenge: Add Mongoose to blogging app

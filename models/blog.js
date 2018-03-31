@@ -16,3 +16,15 @@ const blogSchema = new mongoose.Schema({
 blogSchema.virtual('authorName').get(function() {
   return `${this.author.firstName} ${this.author.lastName}`;
 });
+
+blogSchema.methods.serialize = function() {
+  return {
+    id: this._id,
+    title: this.title,
+    author: this.authorName,
+    contnet: this.content
+  };
+};
+
+module.exports = mongoose.model('Blog', blogSchema);
+

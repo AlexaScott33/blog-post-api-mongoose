@@ -10,13 +10,13 @@ const {PORT, DATABASE_URL} = require('./config');
 
 const app = express();
 
-//const blogsRouter = require('./routes/blogs');
+const blogsRouter = require('./routes/blogs');
 
 app.use(morgan('common'));
 
 app.use(express.static('public'));
 
-//app.use('/api', blogsRouter);
+app.use('/api', blogsRouter);
 
 //Catch-all Error Handler
 //insert code here

@@ -78,30 +78,58 @@ router.get('/posts/:id', (req, res) => {
 //     });
 // });
 
-router.post('/posts', (req, res) => {
-  const requiredFields = ['title', 'content', 'author'];
-  for (let i = 0; i < requiredFields.length; i++) {
-    const field = requiredFields[i];
-    if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`;
-      console.error(message);
-      return res.status(400).send(message);
-    }
+// router.post('/posts', (req, res) => {
+//   const requiredFields = ['title', 'content', 'author'];
+//   for (let i = 0; i < requiredFields.length; i++) {
+//     const field = requiredFields[i];
+//     if (!(field in req.body)) {
+//       const message = `Missing \`${field}\` in request body`;
+//       console.error(message);
+//       return res.status(400).send(message);
+//     }
+//   }
+  
+//   BlogPost
+//     .create({
+//       title: req.body.title,
+//       content: req.body.content,
+//       author: req.body.author
+//     })
+//     .then(blogPost => res.status(201).json(blogPost.serialize()))
+//     .catch(err => {
+//       console.error(err);
+//       res.status(500).json({ error: 'Something went wrong' });
+//     });
+// });
+
+router.put('/posts/:id', (req, res) => {
+  //const {id} = req.params;
+  //const {title, content, author} = req.body;
+
+  if(!req.body.id) {
+    const err = new Error('Missing `id` in request body');
+    console.error(err);
+    err.status = 400; 
   }
-  
-  BlogPost
-    .create({
-      title: req.body.title,
-      content: req.body.content,
-      author: req.body.author
-    })
-    .then(blogPost => res.status(201).json(blogPost.serialize()))
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({ error: 'Something went wrong' });
-    });
-  
+
+  if(req.params.id !== req.body.id) {
+    const err = new Error(`The ${req.params.id} and ${req.body.id} must match.`);
+    console.error(err);
+    err.status = 400;
+  }
+  const toUpdate = {};
+  const updatedBlog = ['title', 'content', 'author'];
+  updatedBlog.forEach(field => {
+    if (field in req.body) {
+      toUpdate[field] = req.body[field];
+    }
+  });
+
+  BlogPost.findByIdAndUpdate(req.params.id, {$set: toUpdate}, {new: true})
+    .then(result => res.status(200).end())
+    .catch(err => res.status(500).json({ message: 'Something went wrong' }));
 });
-  
+
+router.delete()
 
 module.exports = router;

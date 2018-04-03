@@ -1,15 +1,12 @@
 'use strict';
 
+const bodyParser = require('body-parser');
 const express = require('express');
 const router = express.Router();
 
 const mongoose = require('mongoose');
 
-//I exported this from server.js so why do I need it here ??
-const app = express();
-
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
+router.use(bodyParser.json());
 
 const BlogPost = require('../models/blog');
 
@@ -50,57 +47,32 @@ router.get('/posts/:id', (req, res) => {
     });
 });
 
-//create new blog
-// router.post('/posts', (req, res) => {
-//   //const {title, content, author} = req.body;
 
-// //   const requiredFields = ['title', 'content', 'author'];
-// //   for(let i = 0; i < requiredFields.length; i++) {
-// //     const field = requiredFields[i];
-// //     if(!(field in req.body)) {
-// //       const message = `Missing ${field} in request body`;
-// //       console.error(message);
-// //       return res.status(400).send(message);
-// //     }
-// //   }
+router.post('/posts', (req, res) => {
+  //console.log(req.body);
 
-//   //const newBlog = {title, content, author};
-
-//   BlogPost.create({
-//     title: req.body.title,
-//     content: req.body.content,
-//     author: req.body.author
-//   })
-//     .then(blog => res.status(201).json(blog.serialize()))
-//     .catch(err => {
-//       console.error(err);
-//       res.status(500).json({ message: 'Internal server error' });
-//     });
-// });
-
-// router.post('/posts', (req, res) => {
-//   const requiredFields = ['title', 'content', 'author'];
-//   for (let i = 0; i < requiredFields.length; i++) {
-//     const field = requiredFields[i];
-//     if (!(field in req.body)) {
-//       const message = `Missing \`${field}\` in request body`;
-//       console.error(message);
-//       return res.status(400).send(message);
-//     }
-//   }
+  const requiredFields = ['title', 'content', 'author'];
+  for (let i = 0; i < requiredFields.length; i++) {
+    const field = requiredFields[i];
+    if (!(field in req.body)) {
+      const message = `Missing \`${field}\` in request body`;
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
   
-//   BlogPost
-//     .create({
-//       title: req.body.title,
-//       content: req.body.content,
-//       author: req.body.author
-//     })
-//     .then(blogPost => res.status(201).json(blogPost.serialize()))
-//     .catch(err => {
-//       console.error(err);
-//       res.status(500).json({ error: 'Something went wrong' });
-//     });
-// });
+  BlogPost
+    .create({
+      title: req.body.title,
+      content: req.body.content,
+      author: req.body.author
+    })
+    .then(blogPost => res.status(201).json(blogPost.serialize()))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: 'Something went wrong' });
+    });
+});
 
 router.put('/posts/:id', (req, res) => {
   //const {id} = req.params;
@@ -130,6 +102,14 @@ router.put('/posts/:id', (req, res) => {
     .catch(err => res.status(500).json({ message: 'Something went wrong' }));
 });
 
-router.delete()
+router.delete('/:id', (req, res) => {
+  const {id} = req.params;
+
+  BlogPost.findByIdAndRemove(id)
+    .then(() => {
+      console.log(`Deleted blog post with id \`${id}\``);
+      res.status(204).end();
+    });
+});
 
 module.exports = router;

@@ -1,5 +1,6 @@
 'use strict';
 
+
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
@@ -20,6 +21,10 @@ app.use('/api', blogsRouter);
 
 //Catch-all Error Handler
 //insert code here
+
+app.use('*', function(req, res) {
+  return res.status(404).json({message: 'Not Found'});
+});
 
 // closeServer needs access to a server object, but that only
 // gets created when `runServer` runs, so we declare `server` here
